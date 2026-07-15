@@ -6,6 +6,11 @@ on:
       - main
   pull_request:
 
+env:
+  APP_NAME: ${{ vars.APP_NAME }}
+  ENVIRONMENT: ${{ vars.ENVIRONMENT }}
+  LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+
 jobs:
   build:
     runs-on:
@@ -18,19 +23,19 @@ jobs:
 
       - name: Verify Python Installation
         run: |
-          echo "Runner OS: $RUNNER_OS"
-          which python3.11
           python3.11 --version
+          python3.11 -m pip --version
 
       - name: Install Dependencies
         run: |
-          python3.11 -m ensurepip --upgrade
           python3.11 -m pip install --upgrade pip
           python3.11 -m pip install -r requirements.txt
 
-      - name: Verify Installed Packages
+      - name: Display Environment Variables
         run: |
-          python3.11 -m pip list
+          echo "APP_NAME=$APP_NAME"
+          echo "ENVIRONMENT=$ENVIRONMENT"
+          echo "LOG_LEVEL=$LOG_LEVEL"
 
       - name: Run Lint
         run: |
