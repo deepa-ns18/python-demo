@@ -15,8 +15,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Trigger Jenkins Job
+      - name: Trigger Jenkins Pipeline
         run: |
+          CRUMB=$(curl -s \
+          --user "${{ secrets.JENKINS_USER }}:${{ secrets.JENKINS_TOKEN }}" \
+          "${{ secrets.JENKINS_URL }}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")
+
+          echo "Received crumb."
+
           curl -X POST \
+            -H "$CRUMB" \
             --user "${{ secrets.JENKINS_USER }}:${{ secrets.JENKINS_TOKEN }}" \
             "${{ secrets.JENKINS_URL }}/job/${{ secrets.JENKINS_JOB }}/build"
