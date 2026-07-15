@@ -21,6 +21,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Debug Repository Variables
+        run: |
+          echo "vars.APP_NAME='${{ vars.APP_NAME }}'"
+          echo "vars.ENVIRONMENT='${{ vars.ENVIRONMENT }}'"
+          echo "vars.LOG_LEVEL='${{ vars.LOG_LEVEL }}'"
+
       - name: Verify Python Installation
         run: |
           python3.11 --version
