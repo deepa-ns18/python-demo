@@ -1,18 +1,12 @@
-name: Python-CI
+name: Trigger-Jenkins
 
 on:
   push:
     branches:
       - main
-  pull_request:
-
-env:
-  APP_NAME: ${{ vars.APP_NAME }}
-  ENVIRONMENT: ${{ vars.ENVIRONMENT }}
-  LOG_LEVEL: ${{ vars.LOG_LEVEL }}
 
 jobs:
-  build:
+  trigger-jenkins:
     runs-on:
       - self-hosted
       - linux
@@ -21,36 +15,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Debug Repository Variables
+      - name: Trigger Jenkins Job
         run: |
-          echo "vars.APP_NAME='${{ vars.APP_NAME }}'"
-          echo "vars.ENVIRONMENT='${{ vars.ENVIRONMENT }}'"
-          echo "vars.LOG_LEVEL='${{ vars.LOG_LEVEL }}'"
-
-      - name: Verify Python Installation
-        run: |
-          python3.11 --version
-          python3.11 -m pip --version
-
-      - name: Install Dependencies
-        run: |
-          python3.11 -m pip install --upgrade pip
-          python3.11 -m pip install -r requirements.txt
-
-      - name: Display Environment Variables
-        run: |
-          echo "APP_NAME=$APP_NAME"
-          echo "ENVIRONMENT=$ENVIRONMENT"
-          echo "LOG_LEVEL=$LOG_LEVEL"
-
-      - name: Run Lint
-        run: |
-          python3.11 -m flake8 .
-
-      - name: Run Unit Tests
-        run: |
-          python3.11 -m pytest -v
-
-      - name: Run Python Application
-        run: |
-          python3.11 app.py
+          curl -X POST \
+            --user "${{ secrets.JENKINS_USER }}:${{ secrets.JENKINS_TOKEN }}" \
+            "${{ secrets.JENKINS_URL }}/job/${{ secrets.JENKINS_JOB }}/build"
